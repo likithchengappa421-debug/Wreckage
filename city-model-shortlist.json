@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "crayon-architecture/architecture-skyscraper",
+      "name": "Cloudline Tower",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/cloudline-tower.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-cafe",
+      "name": "Cornerleaf Café",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/cornerleaf-cafe.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-fire-station",
+      "name": "Ember Fire Station",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/ember-fire-station.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-supermarket",
+      "name": "Freshfield Market",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/freshfield-market.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-hospital",
+      "name": "Harborlight Hospital",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/harborlight-hospital.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-apartment-block",
+      "name": "Meadow Apartments",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/meadow-apartments.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-garage",
+      "name": "Mossline Garage",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/mossline-garage.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-office-building",
+      "name": "Sageworks Offices",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/sageworks-offices.glb"
+    },
+    {
+      "id": "crayon-architecture/cottage-sunbeam",
+      "name": "Sunbeam Cottage",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/sunbeam-cottage.glb"
+    },
+    {
+      "id": "crayon-architecture/architecture-school",
+      "name": "Willowbrook School",
+      "pack": "Crayon · Buildings",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-architecture-v1.1.1/models/textured/willowbrook-school.glb"
+    },
+    {
+      "id": "crayon-props/prop-crate",
+      "name": "Adventure Crate",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/adventure-crate.glb"
+    },
+    {
+      "id": "crayon-props/street-ad-column",
+      "name": "Advertising Column",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/advertising-column.glb"
+    },
+    {
+      "id": "crayon-props/street-bike-rack",
+      "name": "Bike Rack",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/bike-rack.glb"
+    },
+    {
+      "id": "crayon-props/street-bus-shelter",
+      "name": "Bus Shelter",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/bus-shelter.glb"
+    },
+    {
+      "id": "crayon-props/street-bus-stop-sign",
+      "name": "Bus Stop Sign",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/bus-stop-sign.glb"
+    },
+    {
+      "id": "crayon-props/cafe-table-chairs",
+      "name": "Café Table & Chairs",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/cafe-table-chairs.glb"
+    },
+    {
+      "id": "crayon-props/prop-campfire",
+      "name": "Campfire Kit",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/campfire-kit.glb"
+    },
+    {
+      "id": "crayon-props/prop-checkpoint-flag",
+      "name": "Checkpoint Flag",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/checkpoint-flag.glb"
+    },
+    {
+      "id": "crayon-props/street-city-welcome-gate",
+      "name": "City Welcome Gate",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/city-welcome-gate.glb"
+    },
+    {
+      "id": "crayon-props/street-litter-bin",
+      "name": "City Litter Bin",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/city-litter-bin.glb"
+    },
+    {
+      "id": "crayon-props/street-lamp-classic",
+      "name": "Classic Street Lamp",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/classic-street-lamp.glb"
+    },
+    {
+      "id": "crayon-props/prop-direction-sign",
+      "name": "Direction Signpost",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/direction-signpost.glb"
+    },
+    {
+      "id": "crayon-props/street-post-box",
+      "name": "Pillar Post Box",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/pillar-post-box.glb"
+    },
+    {
+      "id": "crayon-trees/tree-silver-birch",
+      "name": "Silver Birch",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/silver-birch.glb"
+    },
+    {
+      "id": "crayon-trees/tree-sakura-bloom",
+      "name": "Sakura Bloom",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/sakura-bloom.glb"
+    },
+    {
+      "id": "crayon-trees/tree-garden-topiary",
+      "name": "Garden Topiary",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/garden-topiary.glb"
+    },
+    {
+      "id": "crayon-props/street-drinking-fountain",
+      "name": "Drinking Fountain",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/drinking-fountain.glb"
+    },
+    {
+      "id": "crayon-props/prop-barrel",
+      "name": "Dockside Barrel",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/dockside-barrel.glb"
+    },
+    {
+      "id": "crayon-props/street-ev-charger",
+      "name": "EV Charging Point",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/ev-charging-point.glb"
+    },
+    {
+      "id": "crayon-props/street-electric-pole",
+      "name": "Electric Utility Pole",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/electric-utility-pole.glb"
+    },
+    {
+      "id": "crayon-props/street-festoon-lights",
+      "name": "Festoon Lights",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/festoon-lights.glb"
+    },
+    {
+      "id": "crayon-props/park-flagpole",
+      "name": "Flagpole",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/flagpole.glb"
+    },
+    {
+      "id": "crayon-props/street-hydrant",
+      "name": "Fire Hydrant",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/fire-hydrant.glb"
+    },
+    {
+      "id": "crayon-props/reward-gold-coin",
+      "name": "Gold Coin",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/gold-coin.glb"
+    },
+    {
+      "id": "crayon-props/street-guard-rail",
+      "name": "Guard Rail Section",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/guard-rail-section.glb"
+    },
+    {
+      "id": "crayon-props/reward-health-heart",
+      "name": "Health Heart",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/health-heart.glb"
+    },
+    {
+      "id": "crayon-props/street-newsstand-kiosk",
+      "name": "Newsstand Kiosk",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/newsstand-kiosk.glb"
+    },
+    {
+      "id": "crayon-props/street-market-stall",
+      "name": "Market Stall",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/market-stall.glb"
+    },
+    {
+      "id": "crayon-props/cafe-parasol-table",
+      "name": "Parasol Table",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/parasol-table.glb"
+    },
+    {
+      "id": "crayon-props/street-park-bench",
+      "name": "Park Bench",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/park-bench.glb"
+    },
+    {
+      "id": "crayon-props/park-railing",
+      "name": "Park Railing Section",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/park-railing-section.glb"
+    },
+    {
+      "id": "crayon-props/street-park-slide",
+      "name": "Park Slide",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/park-slide.glb"
+    },
+    {
+      "id": "crayon-props/street-parking-meter",
+      "name": "Parking Meter",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/parking-meter.glb"
+    },
+    {
+      "id": "crayon-props/street-phone-booth",
+      "name": "Phone Booth",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/phone-booth.glb"
+    },
+    {
+      "id": "crayon-props/park-picnic-table",
+      "name": "Picnic Table",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/picnic-table.glb"
+    },
+    {
+      "id": "crayon-props/park-fountain",
+      "name": "Plaza Fountain",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/plaza-fountain.glb"
+    },
+    {
+      "id": "crayon-props/street-recycling-bins",
+      "name": "Recycling Trio",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/recycling-trio.glb"
+    },
+    {
+      "id": "crayon-props/street-road-sign",
+      "name": "Road Sign",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/road-sign.glb"
+    },
+    {
+      "id": "crayon-props/prop-bridge",
+      "name": "Rope Bridge",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/rope-bridge.glb"
+    },
+    {
+      "id": "crayon-props/street-name-sign",
+      "name": "Street Name Sign",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/street-name-sign.glb"
+    },
+    {
+      "id": "crayon-props/park-swing-set",
+      "name": "Swing Set",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/swing-set.glb"
+    },
+    {
+      "id": "crayon-props/street-planter",
+      "name": "Street Planter",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/street-planter.glb"
+    },
+    {
+      "id": "crayon-props/street-bollard",
+      "name": "Traffic Bollard",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/traffic-bollard.glb"
+    },
+    {
+      "id": "crayon-props/street-traffic-cone",
+      "name": "Traffic Cone",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/traffic-cone.glb"
+    },
+    {
+      "id": "crayon-props/street-traffic-light",
+      "name": "Traffic Light",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/traffic-light.glb"
+    },
+    {
+      "id": "crayon-props/street-utility-cabinet",
+      "name": "Utility Cabinet",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/utility-cabinet.glb"
+    },
+    {
+      "id": "crayon-props/reward-victory-star",
+      "name": "Victory Star",
+      "pack": "Crayon · Street props",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-props-v1.0.0/models/textured/victory-star.glb"
+    },
+    {
+      "id": "crayon-trees/tree-alpine-pine",
+      "name": "Alpine Pine",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/alpine-pine.glb"
+    },
+    {
+      "id": "crayon-trees/tree-autumn-maple",
+      "name": "Autumn Maple",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/autumn-maple.glb"
+    },
+    {
+      "id": "crayon-trees/tree-coastal-palm",
+      "name": "Coastal Palm",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/coastal-palm.glb"
+    },
+    {
+      "id": "crayon-trees/tree-cloud-oak",
+      "name": "Cloud Oak",
+      "pack": "Crayon · Trees",
+      "variant": "textured",
+      "path": "assets/city/crayon-city-trees-v1.1.1/models/textured/cloud-oak.glb"
+    }
+  ]
+}

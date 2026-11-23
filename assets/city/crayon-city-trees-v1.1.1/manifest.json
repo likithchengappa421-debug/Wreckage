@@ -1,0 +1,154 @@
+{
+  "id": "crayon-city-trees",
+  "name": "Crayon City Trees",
+  "version": "1.1.1",
+  "generatedAt": "2026-07-27T13:21:32.649Z",
+  "primaryFormat": "GLB",
+  "assetCount": 7,
+  "modelFileCount": 14,
+  "textureVariants": [
+    "textured",
+    "flat"
+  ],
+  "collision": {
+    "schema": "crayon.collider.v2",
+    "type": "compound boxes",
+    "bakedGeometry": true,
+    "includedOnEveryModel": true
+  },
+  "assets": [
+    {
+      "id": "tree-cloud-oak",
+      "name": "Cloud Oak",
+      "family": "Nature",
+      "file": "models/textured/cloud-oak.glb",
+      "flatFile": "models/flat/cloud-oak.glb",
+      "texturesEnabled": true,
+      "triangles": 776,
+      "dimensions": [
+        3.711,
+        4.679,
+        3.451
+      ],
+      "colliderCount": 16,
+      "collisionTriangles": 192,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    },
+    {
+      "id": "tree-alpine-pine",
+      "name": "Alpine Pine",
+      "family": "Nature",
+      "file": "models/textured/alpine-pine.glb",
+      "flatFile": "models/flat/alpine-pine.glb",
+      "texturesEnabled": true,
+      "triangles": 524,
+      "dimensions": [
+        3.913,
+        4.614,
+        3.913
+      ],
+      "colliderCount": 14,
+      "collisionTriangles": 168,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    },
+    {
+      "id": "tree-sakura-bloom",
+      "name": "Sakura Bloom",
+      "family": "Nature",
+      "file": "models/textured/sakura-bloom.glb",
+      "flatFile": "models/flat/sakura-bloom.glb",
+      "texturesEnabled": true,
+      "triangles": 730,
+      "dimensions": [
+        5.03,
+        3.759,
+        5.01
+      ],
+      "colliderCount": 21,
+      "collisionTriangles": 252,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    },
+    {
+      "id": "tree-coastal-palm",
+      "name": "Coastal Palm",
+      "family": "Nature",
+      "file": "models/textured/coastal-palm.glb",
+      "flatFile": "models/flat/coastal-palm.glb",
+      "texturesEnabled": true,
+      "triangles": 748,
+      "dimensions": [
+        5.099,
+        4.685,
+        5.025
+      ],
+      "colliderCount": 16,
+      "collisionTriangles": 192,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    },
+    {
+      "id": "tree-silver-birch",
+      "name": "Silver Birch",
+      "family": "Nature",
+      "file": "models/textured/silver-birch.glb",
+      "flatFile": "models/flat/silver-birch.glb",
+      "texturesEnabled": true,
+      "triangles": 736,
+      "dimensions": [
+        1.757,
+        4.245,
+        1.757
+      ],
+      "colliderCount": 19,
+      "collisionTriangles": 228,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    },
+    {
+      "id": "tree-autumn-maple",
+      "name": "Autumn Maple",
+      "family": "Nature",
+      "file": "models/textured/autumn-maple.glb",
+      "flatFile": "models/flat/autumn-maple.glb",
+      "texturesEnabled": true,
+      "triangles": 730,
+      "dimensions": [
+        4.986,
+        4.461,
+        4.959
+      ],
+      "colliderCount": 21,
+      "collisionTriangles": 252,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    },
+    {
+      "id": "tree-garden-topiary",
+      "name": "Garden Topiary",
+      "family": "Nature",
+      "file": "models/textured/garden-topiary.glb",
+      "flatFile": "models/flat/garden-topiary.glb",
+      "texturesEnabled": true,
+      "triangles": 500,
+      "dimensions": [
+        2.175,
+        3.786,
+        2.175
+      ],
+      "colliderCount": 14,
+      "collisionTriangles": 168,
+      "collisionSchema": "crayon.collider.v2",
+      "units": "meters",
+      "upAxis": "Y"
+    }
+  ]
+}

@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>City Model Browser · Dozer Dash</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #e5e9d9; color: #233834; font: 15px system-ui, sans-serif; }
+    button, input, select { font: inherit; }
+    button, select, input[type="checkbox"] { cursor: pointer; }
+    .wrap { max-width: 1200px; margin: auto; padding: 20px; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
+    h1 { margin: 0; font-size: clamp(24px, 5vw, 36px); letter-spacing: -.04em; }
+    header p { margin: 4px 0 0; color: #546962; }
+    a { color: #315d50; font-weight: 750; }
+    .layout { display: grid; grid-template-columns: minmax(255px, 340px) minmax(0, 1fr); gap: 18px; align-items: start; }
+    .panel { background: #fffdf5; border: 1px solid #d5ddca; border-radius: 18px; padding: 16px; box-shadow: 0 8px 26px #344c3512; }
+    .catalog { display: grid; gap: 10px; }
+    label { font-size: 13px; font-weight: 750; }
+    .field { display: grid; gap: 4px; }
+    input[type="search"], select { width: 100%; padding: 9px; color: #233834; background: #f7f8ef; border: 1px solid #bccdb9; border-radius: 8px; }
+    .check { display: flex; align-items: center; gap: 8px; }
+    input[type="checkbox"] { width: 18px; height: 18px; accent-color: #3a8068; }
+    .count { margin: 0; color: #586d62; font-size: 12px; }
+    .list { list-style: none; padding: 0; margin: 0; max-height: 58vh; overflow-y: auto; border: 1px solid #e1e7d8; border-radius: 10px; }
+    .list li { display: flex; align-items: center; gap: 5px; padding: 3px 8px; border-bottom: 1px solid #e9eee2; }
+    .list li:last-child { border-bottom: 0; }
+    .list li.active { background: #e5f1d9; }
+    .model-link { flex: 1; min-width: 0; text-align: left; background: none; border: 0; border-radius: 7px; padding: 8px 4px; color: #233834; }
+    .model-link:hover, .model-link:focus-visible { background: #edf4e5; }
+    .model-link strong, .model-link span { display: block; overflow-wrap: anywhere; }
+    .model-link span { margin-top: 2px; color: #6a7c72; font-size: 11px; }
+    .empty { padding: 14px; color: #586d62; }
+    .preview { display: grid; gap: 12px; }
+    .preview h2 { margin: 0; font-size: 23px; }
+    .meta { margin: 2px 0 0; color: #66796c; font-size: 13px; }
+    .viewport { position: relative; height: clamp(260px, 48vh, 500px); overflow: hidden; background: #cbd9c3; border-radius: 12px; }
+    .viewport canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    .preview-status { position: absolute; inset: auto 12px 12px; margin: 0; padding: 8px 10px; border-radius: 8px; color: #344b42; background: #fffdf5e8; font-size: 12px; }
+    .preview-status:empty { display: none; }
+    .hint { margin: 0; color: #64766b; font-size: 12px; }
+    .actions { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+    .variant { min-width: 150px; }
+    .variant[hidden] { display: none; }
+    .action { padding: 10px 14px; border: 1px solid #9db59e; border-radius: 9px; background: #f6f8ef; color: #244238; font-weight: 800; }
+    .action.primary { border-color: #397f5d; background: #4a9670; color: white; }
+    .action:disabled { opacity: .5; cursor: default; }
+    .notice { margin: 0; color: #845f36; font-size: 12px; line-height: 1.45; }
+    .notice:empty { display: none; }
+    .footnote { margin: 0; color: #64766b; font-size: 12px; line-height: 1.5; }
+    @media (max-width: 700px) {
+      .wrap { padding: 14px; }
+      header { align-items: start; }
+      .layout { display: flex; flex-direction: column; }
+      .preview, .catalog { width: 100%; }
+      .preview { order: 0; }
+      .catalog { order: 1; }
+      .viewport { height: min(42vh, 340px); min-height: 230px; }
+      .list { max-height: 45vh; }
+    }
+  </style>
+  <script type="importmap">
+    { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>City model browser</h1>
+        <p>Preview and shortlist models before adding them to the city.</p>
+      </div>
+      <a href="./index.html">← Back to game</a>
+    </header>
+    <main class="layout">
+      <section class="panel catalog" aria-label="Model catalog">
+        <div class="field">
+          <label for="search">Search models</label>
+          <input id="search" type="search" placeholder="Building, bench, tree…">
+        </div>
+        <div class="field">
+          <label for="pack">Asset pack</label>
+          <select id="pack"><option value="">All city packs</option></select>
+        </div>
+        <label class="check"><input id="selectedOnly" type="checkbox"> Show shortlist only</label>
+        <p class="count" id="count" aria-live="polite">Loading catalog…</p>
+        <ul class="list" id="modelList" aria-label="Models"></ul>
+        <p class="notice" id="catalogNotice" role="status"></p>
+      </section>
+      <section class="panel preview" aria-label="Model preview">
+        <div>
+          <h2 id="modelName">Choose a model</h2>
+          <p class="meta" id="modelMeta">Select a model from the list.</p>
+        </div>
+        <div class="viewport" id="viewport">
+          <p class="preview-status" id="previewStatus" role="status">Loading 3D preview. An internet connection is needed for Three.js.</p>
+        </div>
+        <p class="hint">Drag to rotate · scroll or pinch to zoom</p>
+        <div class="actions">
+          <div class="field variant" id="variantField" hidden>
+            <label for="variant">Appearance</label>
+            <select id="variant"><option value="textured">Textured</option><option value="flat">Flat colors</option></select>
+          </div>
+          <button class="action primary" id="selectModel" type="button" disabled>Add to shortlist</button>
+          <button class="action" id="export" type="button" disabled>Export shortlist</button>
+        </div>
+        <p class="notice" id="storageNotice" role="status"></p>
+        <p class="footnote">Your shortlist is saved in this browser. Save exports in the project folder. The game loads that folder's city-model-shortlist.json on startup and currently supports Crayon buildings, props and trees.</p>
+      </section>
+    </main>
+  </div>
+  <script type="module">
+    const STORAGE_KEY = "dozerDash.modelShortlist.v1";
+    const packs = [
+      { id: "crayon-architecture", label: "Crayon · Buildings", folder: "assets/city/crayon-city-architecture-v1.1.1", manifest: true },
+      { id: "crayon-props", label: "Crayon · Street props", folder: "assets/city/crayon-city-props-v1.0.0", manifest: true },
+      { id: "crayon-trees", label: "Crayon · Trees", folder: "assets/city/crayon-city-trees-v1.1.1", manifest: true },
+      { id: "kenney-commercial", label: "Kenney · Commercial", folder: "assets/city/kenney_city-kit-commercial_2.1/Models/GLB format", files: [
+        ...[..."abcdefghijklmn"].map(letter => `building-${letter}`),
+        ...[..."abcde"].map(letter => `building-skyscraper-${letter}`),
+        "detail-awning", "detail-awning-wide", "detail-overhang", "detail-overhang-wide", "detail-parasol-a", "detail-parasol-b",
+        ...[..."abcdefghijklmn"].map(letter => `low-detail-building-${letter}`),
+        "low-detail-building-wide-a", "low-detail-building-wide-b"
+      ] },
+      { id: "kenney-suburban", label: "Kenney · Suburban", folder: "assets/city/kenney_city-kit-suburban_20/Models/GLB format", files: [
+        ...[..."abcdefghijklmnopqrstu"].map(letter => `building-type-${letter}`),
+        "driveway-long", "driveway-short", "fence-1x2", "fence-1x3", "fence-1x4", "fence-2x2", "fence-2x3",
+        "fence-3x2", "fence-3x3", "fence", "fence-low", "path-long", "path-short", "path-stones-long",
+        "path-stones-messy", "path-stones-short", "planter", "tree-large", "tree-small"
+      ] }
+    ];
+    const search = document.getElementById("search");
+    const packFilter = document.getElementById("pack");
+    const selectedOnly = document.getElementById("selectedOnly");
+    const list = document.getElementById("modelList");
+    const count = document.getElementById("count");
+    const catalogNotice = document.getElementById("catalogNotice");
+    const storageNotice = document.getElementById("storageNotice");
+    const viewport = document.getElementById("viewport");
+    const previewStatus = document.getElementById("previewStatus");
+    const modelName = document.getElementById("modelName");
+    const modelMeta = document.getElementById("modelMeta");
+    const variantField = document.getElementById("variantField");
+    const variant = document.getElementById("variant");
+    const selectModel = document.getElementById("selectModel");
+    const exportButton = document.getElementById("export");
+    let models = [];
+    let selected = new Map();
+    let active = null;
+    let preview = null;
+    let requestId = 0;
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.version !== 1 || !Array.isArray(data.items) || !data.items.every(item =>
+          item && typeof item.id === "string" && typeof item.name === "string" &&
+          typeof item.pack === "string" && typeof item.path === "string" && typeof item.variant === "string")) {
+          throw new Error("Unrecognized shortlist format");
+        }
+        selected = new Map(data.items.map(item => [item.id, item]));
+      }
+    } catch (error) {
+      console.error("Could not read the saved shortlist.", error);
+      storageNotice.textContent = "Could not read the saved shortlist. Selections may not persist; export a copy.";
+    }
+
+    function saveSelection() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, items: [...selected.values()] }));
+      } catch (error) {
+        console.error("Could not save the shortlist.", error);
+        storageNotice.textContent = "Could not save in this browser. Export the shortlist before leaving.";
+      }
+    }
+
+    function selectionFor(model, appearance) {
+      const chosen = model.variants[appearance] ? appearance : "default";
+      return { id: model.id, name: model.name, pack: model.pack, variant: chosen, path: model.variants[chosen] };
+    }
+
+    function setSelected(model, checked, appearance = "textured") {
+      if (checked) selected.set(model.id, selectionFor(model, appearance));
+      else selected.delete(model.id);
+      saveSelection();
+      renderList();
+      updateControls();
+    }
+
+    function updateControls() {
+      selectModel.disabled = !active;
+      selectModel.textContent = active && selected.has(active.id) ? "Remove from shortlist" : "Add to shortlist";
+      selectModel.setAttribute("aria-pressed", String(!!active && selected.has(active.id)));
+      exportButton.disabled = selected.size === 0;
+    }
+
+    function renderList() {
+      const query = search.value.trim().toLocaleLowerCase();
+      const visible = models.filter(model => (!packFilter.value || model.packId === packFilter.value) &&
+        (!selectedOnly.checked || selected.has(model.id)) &&
+        `${model.name} ${model.pack}`.toLocaleLowerCase().includes(query));
+      count.textContent = `${visible.length} models shown · ${selected.size} shortlisted`;
+      list.replaceChildren();
+      if (!visible.length) {
+        const empty = document.createElement("li");
+        empty.className = "empty";
+        empty.textContent = "No models match these filters.";
+        list.append(empty);
+      }
+      for (const model of visible) {
+        const item = document.createElement("li");
+        item.classList.toggle("active", active?.id === model.id);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "model-link";
+        const name = document.createElement("strong");
+        name.textContent = model.name;
+        const pack = document.createElement("span");
+        pack.textContent = model.pack;
+        button.append(name, pack);
+        button.addEventListener("click", () => {
+          showModel(model);
+          if (matchMedia("(max-width: 700px)").matches) {
+            document.querySelector(".preview").scrollIntoView({ block: "start" });
+          }
+        });
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        check.checked = selected.has(model.id);
+        check.setAttribute("aria-label", `Shortlist ${model.name} from ${model.pack}`);
+        check.addEventListener("change", () => setSelected(model, check.checked,
+          active?.id === model.id ? variant.value : "textured"));
+        item.append(button, check);
+        list.append(item);
+      }
+      updateControls();
+    }
+
+    async function loadCatalog() {
+      const results = await Promise.allSettled(packs.map(async pack => {
+        if (!pack.manifest) return pack.files.map(file => ({
+          id: `${pack.id}/${file}`, packId: pack.id, pack: pack.label,
+          name: file.replaceAll("-", " ").replace(/\b\w/g, letter => letter.toUpperCase()),
+          variants: { default: `${pack.folder}/${file}.glb` }
+        }));
+        const response = await fetch(`${pack.folder}/manifest.json`);
+        if (!response.ok) throw new Error(`${pack.label}: HTTP ${response.status}`);
+        const manifest = await response.json();
+        if (!Array.isArray(manifest.assets)) throw new Error(`${pack.label}: invalid manifest`);
+        return manifest.assets.map(asset => {
+          if (typeof asset.id !== "string" || typeof asset.name !== "string" ||
+            typeof asset.file !== "string" || typeof asset.flatFile !== "string") {
+            throw new Error(`${pack.label}: invalid model entry`);
+          }
+          return {
+            id: `${pack.id}/${asset.id}`, packId: pack.id, pack: pack.label, name: asset.name,
+            variants: { textured: `${pack.folder}/${asset.file}`, flat: `${pack.folder}/${asset.flatFile}` },
+            triangles: asset.triangles
+          };
+        });
+      }));
+      const failures = [];
+      results.forEach((result, index) => {
+        if (result.status === "fulfilled") models.push(...result.value);
+        else {
+          console.error(`Could not load ${packs[index].label}.`, result.reason);
+          failures.push(packs[index].label);
+        }
+      });
+      if (failures.length) {
+        catalogNotice.textContent = `Could not load ${failures.join(", ")}. If opening a local file, serve this folder with “python3 -m http.server 8000” and open http://localhost:8000/model-browser.html.`;
+      }
+      models.sort((a, b) => a.pack.localeCompare(b.pack) || a.name.localeCompare(b.name));
+      const catalog = new Map(models.map(model => [model.id, model]));
+      let updated = false;
+      for (const [id, item] of selected) {
+        const model = catalog.get(id);
+        if (model?.variants[item.variant] && item.path !== model.variants[item.variant]) {
+          selected.set(id, selectionFor(model, item.variant));
+          updated = true;
+        }
+      }
+      if (updated) saveSelection();
+      renderList();
+    }
+
+    function showModel(model) {
+      active = model;
+      modelName.textContent = model.name;
+      modelMeta.textContent = `${model.pack}${Number.isFinite(model.triangles) ? ` · ${model.triangles} triangles` : ""}`;
+      variantField.hidden = !model.variants.textured;
+      variant.value = selected.get(model.id)?.variant === "flat" ? "flat" : "textured";
+      renderList();
+      loadPreview();
+    }
+
+    async function loadPreview() {
+      if (!active || !preview) return;
+      const currentRequest = ++requestId;
+      const appearance = active.variants[variant.value] ? variant.value : "default";
+      const path = active.variants[appearance];
+      preview.clear();
+      previewStatus.textContent = `Loading ${active.name}…`;
+      try {
+        const { loader, failures } = preview.createLoader();
+        const gltf = await loader.loadAsync(new URL(path, location.href).href);
+        if (currentRequest !== requestId) {
+          preview.dispose(gltf.scene);
+          return;
+        }
+        if (failures.length) {
+          preview.dispose(gltf.scene);
+          throw new Error(`Could not load model resources: ${failures.join(", ")}`);
+        }
+        gltf.scene.traverse(node => { if (node.name === "Colliders") node.visible = false; });
+        preview.show(gltf.scene);
+        previewStatus.textContent = "";
+      } catch (error) {
+        if (currentRequest !== requestId) return;
+        console.error(`Could not load model ${path}.`, error);
+        previewStatus.textContent = `Could not load ${active.name}. Check that the asset files exist. If using a local file, run “python3 -m http.server 8000” in this folder and open http://localhost:8000/model-browser.html.`;
+      }
+    }
+
+    async function createPreview() {
+      const [THREE, { GLTFLoader }, { OrbitControls }] = await Promise.all([
+        import("three"),
+        import("https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/loaders/GLTFLoader.js"),
+        import("https://cdn.jsdelivr.net/npm/three@0.149.0/examples/jsm/controls/OrbitControls.js")
+      ]);
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      renderer.domElement.setAttribute("aria-label", "Interactive 3D model preview");
+      viewport.prepend(renderer.domElement);
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color("#cbd9c3");
+      scene.add(new THREE.HemisphereLight("#ffffff", "#82907d", 1.35));
+      const light = new THREE.DirectionalLight("#fff5e0", 1.15);
+      light.position.set(5, 9, 6);
+      scene.add(light);
+      const grid = new THREE.GridHelper(12, 12, "#90a58d", "#acbda4");
+      grid.position.y = -.015;
+      scene.add(grid);
+      const camera = new THREE.PerspectiveCamera(40, 1, .01, 100);
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = false;
+      controls.minDistance = 1.5;
+      controls.maxDistance = 25;
+      let current = null;
+      const render = () => renderer.render(scene, camera);
+      controls.addEventListener("change", render);
+      function dispose(root) {
+        const geometries = new Set(), materials = new Set(), textures = new Set();
+        root.traverse(node => {
+          if (node.geometry) geometries.add(node.geometry);
+          for (const material of (Array.isArray(node.material) ? node.material : [node.material])) {
+            if (!material) continue;
+            materials.add(material);
+            for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+          }
+        });
+        geometries.forEach(geometry => geometry.dispose());
+        materials.forEach(material => material.dispose());
+        textures.forEach(texture => texture.dispose());
+      }
+      function clear() {
+        if (!current) return;
+        scene.remove(current);
+        dispose(current);
+        current = null;
+        render();
+      }
+      function show(root) {
+        root.updateMatrixWorld(true);
+        const bounds = new THREE.Box3();
+        root.traverseVisible(node => {
+          if (!node.isMesh || !node.geometry) return;
+          if (!node.geometry.boundingBox) node.geometry.computeBoundingBox();
+          bounds.union(node.geometry.boundingBox.clone().applyMatrix4(node.matrixWorld));
+        });
+        if (bounds.isEmpty()) {
+          dispose(root);
+          throw new Error("Model has no visible mesh");
+        }
+        const size = bounds.getSize(new THREE.Vector3());
+        const largest = Math.max(size.x, size.y, size.z);
+        if (!Number.isFinite(largest) || largest <= 0) {
+          dispose(root);
+          throw new Error("Model has invalid dimensions");
+        }
+        const center = bounds.getCenter(new THREE.Vector3());
+        root.position.set(-center.x, -bounds.min.y, -center.z);
+        current = new THREE.Group();
+        current.add(root);
+        current.scale.setScalar(3 / largest);
+        scene.add(current);
+        const targetY = size.y * 3 / largest / 2;
+        controls.target.set(0, targetY, 0);
+        camera.position.set(3.4, targetY + 2.6, 4.2);
+        controls.update();
+        render();
+      }
+      function resize() {
+        const width = Math.max(1, viewport.clientWidth);
+        const height = Math.max(1, viewport.clientHeight);
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        render();
+      }
+      new ResizeObserver(resize).observe(viewport);
+      resize();
+      function createLoader() {
+        const failures = [];
+        const manager = new THREE.LoadingManager();
+        manager.onError = url => failures.push(url);
+        return { loader: new GLTFLoader(manager), failures };
+      }
+      return { createLoader, clear, show, dispose };
+    }
+
+    for (const pack of packs) {
+      const option = document.createElement("option");
+      option.value = pack.id;
+      option.textContent = pack.label;
+      packFilter.append(option);
+    }
+    search.addEventListener("input", renderList);
+    packFilter.addEventListener("change", renderList);
+    selectedOnly.addEventListener("change", renderList);
+    selectModel.addEventListener("click", () => {
+      if (active) setSelected(active, !selected.has(active.id), variant.value);
+    });
+    variant.addEventListener("change", () => {
+      if (!active) return;
+      if (selected.has(active.id)) setSelected(active, true, variant.value);
+      loadPreview();
+    });
+    exportButton.addEventListener("click", async () => {
+      const json = JSON.stringify({ version: 1, items: [...selected.values()] }, null, 2);
+      if (typeof window.showSaveFilePicker === "function") {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: "city-model-shortlist.json",
+            types: [{ description: "JSON file", accept: { "application/json": [".json"] } }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(json);
+          await writable.close();
+          storageNotice.textContent = "Shortlist saved. Keep the JSON in the project folder.";
+          return;
+        } catch (error) {
+          if (error instanceof DOMException && error.name === "AbortError") {
+            storageNotice.textContent = "Export cancelled; the shortlist remains in this browser.";
+            return;
+          }
+          console.error("Could not save the shortlist file; downloading a copy instead.", error);
+        }
+      }
+      const file = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "city-model-shortlist.json";
+      link.click();
+      storageNotice.textContent = "Downloaded the shortlist. Move the JSON into the project folder.";
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+    await loadCatalog();
+    try {
+      preview = await createPreview();
+      if (models.length) showModel(active || models[0]);
+      else previewStatus.textContent = "No models could be loaded. Check the catalog message.";
+    } catch (error) {
+      console.error("Could not initialize the 3D preview.", error);
+      previewStatus.textContent = "3D preview could not start. Check your internet connection and WebGL support, then reload.";
+    }
+  </script>
+</body>
+</html>
