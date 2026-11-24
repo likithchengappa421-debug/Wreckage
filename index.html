@@ -647,7 +647,7 @@
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   </section>
 
-  <button class="sound-button" id="soundButton" aria-label="Toggle sound" title="Toggle sound">♫</button>
+  <button class="sound-button" id="soundButton" aria-label="Turn sound on" title="Turn sound on">♫</button>
   <button class="camera-settings-button" id="cameraSettingsButton" aria-label="Camera settings" aria-controls="cameraPanel" aria-expanded="false" title="Camera settings">◉</button>
   <section class="camera-panel" id="cameraPanel" aria-label="Camera view settings" hidden>
     <h2>CAMERA VIEW</h2>
@@ -829,6 +829,11 @@
       const joystickVector = { x: 0, y: 0 };
       let muted = true;
       let audioContext = null;
+      let audioMaster = null;
+      let audioNoise = null;
+      let audioResumePending = false;
+      let activeSoundVoices = 0;
+      const lastSoundTimes = new Map();
       let score = 0;
 
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -2268,6 +2273,7 @@
         item.crushJob = job;
         if (kind === "building") item.destroyed = true;
         crushJobs.push(job);
+        playSound("bite");
       }
 
       function touchesJaw(item, centerX = item.x, centerY = item.y, angle = 0) {
@@ -2339,7 +2345,7 @@
               job.item.eaten = true;
             }
             job.fragments = createCrushFragments(job);
-            beep(220, .08, "triangle", .035);
+            playSound("crush");
           }
           if (job.stage !== "shred") continue;
           for (const fragment of job.fragments.children) {
@@ -2366,7 +2372,6 @@
           spawnCoinTrail(job.kind === "building" ? 28 : 2 + Math.floor(value / 3));
           toast(player.x, player.y - 20, `+${value * 10}`, "#fff1a8");
           updateGrowth();
-          beep(180 + player.combo * 22, .055, "triangle", .025);
           crushJobs.splice(i, 1);
         }
       }
@@ -2385,7 +2390,6 @@
           score += 100;
           spawnCoinTrail(7);
           toast(player.x, player.y - 27, "+7 COINS", "#fff1a8");
-          beep(520, .12, "sine", .055);
           intakeJobs.splice(i, 1);
         }
       }
@@ -2533,6 +2537,7 @@
               lateral: -dx * facingY + dy * facingX
             };
             intakeJobs.push(person.intakeJob);
+            playSound("intake");
             continue;
           }
           const d = distance(player, person);
@@ -2565,12 +2570,14 @@
           player.transformTimer = 2.3;
           toast(player.x, player.y - 44, `GROWING! LV. ${player.level}`, "#d8ff75");
           emitBurst(player.x, player.y, "#d8ff75", 18);
+          playSound("level");
         }
         const maxGrowth = (MAX_LEVEL - 1) * PICKUPS_PER_LEVEL;
         player.size = 1 + Math.min(player.growth, maxGrowth) * GROWTH_PER_PICKUP;
       }
 
       function spawnCoinTrail(count) {
+        playSound("coin");
         const facingX = Math.cos(player.angle);
         const facingY = Math.sin(player.angle);
         const sideX = -facingY;
@@ -2630,6 +2637,7 @@
       function endGame() {
         playing = false;
         gameOver = true;
+        playSound("finish");
         resetJoystick();
         introText.textContent = `You collected ${player.peopleCollected} people and ${player.coins} coins, and cleared ${player.eaten | 0} messes.`;
         playButton.innerHTML = 'PLAY AGAIN <span aria-hidden="true">↻</span>';
@@ -3141,23 +3149,95 @@
         mapCtx.beginPath(); mapCtx.arc(player.x / WORLD.width * w, player.y / WORLD.height * h, 7, 0, Math.PI * 2); mapCtx.stroke();
       }
 
-      function beep(frequency, duration, type, volume) {
-        if (muted) return;
+      function updateSoundButton() {
+        soundButton.textContent = muted ? "♫" : "♪";
+        const label = muted ? "Turn sound on" : "Turn sound off";
+        soundButton.setAttribute("aria-label", label);
+        soundButton.title = label;
+      }
+
+      function soundError(error) {
+        console.warn("Sound could not be played.", error);
+        muted = true;
+        if (audioMaster) audioMaster.gain.setValueAtTime(0, audioContext.currentTime);
+        updateSoundButton();
+        soundButton.title = "Sound unavailable; click to retry";
+        soundButton.setAttribute("aria-label", "Sound unavailable; click to retry");
+      }
+
+      function resumeSound() {
+        if (!audioContext || audioContext.state === "running" || audioResumePending) return;
+        audioResumePending = true;
+        audioContext.resume().then(() => {
+          audioResumePending = false;
+          if (!muted) {
+            if (audioContext.state !== "running") throw new Error("Audio is still suspended");
+            playSound("enabled");
+          }
+        }).catch(error => {
+          audioResumePending = false;
+          soundError(error);
+        });
+      }
+
+      function playSound(name) {
+        if (muted || !audioContext || !audioMaster) return;
+        if (audioContext.state !== "running") {
+          resumeSound();
+          return;
+        }
+        const now = performance.now();
+        if (now - (lastSoundTimes.get(name) ?? -Infinity) < 120) return;
+        lastSoundTimes.set(name, now);
         try {
-          audioContext ||= new AudioContext();
-          if (audioContext.state === "suspended") audioContext.resume();
-          const oscillator = audioContext.createOscillator();
-          const gain = audioContext.createGain();
-          oscillator.type = type;
-          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-          gain.gain.setValueAtTime(volume, audioContext.currentTime);
-          gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + duration);
-          oscillator.connect(gain); gain.connect(audioContext.destination);
-          oscillator.start(); oscillator.stop(audioContext.currentTime + duration);
+          const tone = (frequency, endFrequency, duration, volume, type = "sine", delay = 0) => {
+            if (activeSoundVoices >= 10) return;
+            const start = audioContext.currentTime + delay;
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, start);
+            oscillator.frequency.exponentialRampToValueAtTime(endFrequency, start + duration);
+            gain.gain.setValueAtTime(.0001, start);
+            gain.gain.linearRampToValueAtTime(volume, start + .008);
+            gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+            oscillator.connect(gain); gain.connect(audioMaster);
+            activeSoundVoices++;
+            oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); activeSoundVoices--; };
+            oscillator.start(start); oscillator.stop(start + duration);
+          };
+          const noise = (duration, volume) => {
+            if (activeSoundVoices >= 10) return;
+            if (!audioNoise) {
+              audioNoise = audioContext.createBuffer(1, Math.ceil(audioContext.sampleRate * .2), audioContext.sampleRate);
+              const samples = audioNoise.getChannelData(0);
+              for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1;
+            }
+            const start = audioContext.currentTime;
+            const source = audioContext.createBufferSource();
+            const filter = audioContext.createBiquadFilter();
+            const gain = audioContext.createGain();
+            source.buffer = audioNoise;
+            filter.type = "lowpass"; filter.frequency.value = 1200;
+            gain.gain.setValueAtTime(volume, start);
+            gain.gain.exponentialRampToValueAtTime(.0001, start + duration);
+            source.connect(filter); filter.connect(gain); gain.connect(audioMaster);
+            activeSoundVoices++;
+            source.onended = () => { source.disconnect(); filter.disconnect(); gain.disconnect(); activeSoundVoices--; };
+            source.start(start); source.stop(start + duration);
+          };
+          switch (name) {
+            case "bite": tone(170, 75, .12, .055, "triangle"); noise(.08, .025); break;
+            case "crush": tone(135, 55, .18, .045, "sawtooth"); noise(.18, .035); break;
+            case "intake": tone(560, 210, .22, .045, "sine"); break;
+            case "coin": tone(950, 1350, .13, .045); tone(1420, 1850, .13, .025, "sine", .055); break;
+            case "level": tone(440, 660, .16, .04, "triangle"); tone(660, 990, .22, .04, "triangle", .12); break;
+            case "start": tone(330, 510, .15, .035, "triangle"); tone(510, 760, .18, .035, "triangle", .1); break;
+            case "finish": tone(600, 400, .23, .035, "triangle"); tone(400, 270, .28, .035, "triangle", .14); break;
+            case "enabled": tone(620, 850, .12, .035); break;
+          }
         } catch (error) {
-          console.warn("Sound could not be played.", error);
-          muted = true;
-          soundButton.textContent = "♫";
+          soundError(error);
         }
       }
 
@@ -3168,6 +3248,7 @@
         playing = true;
         overlay.classList.add("hidden");
         lastTime = performance.now();
+        playSound("start");
       }
 
       function updateJoystick(event) {
@@ -3302,9 +3383,25 @@
       updateCameraControlLabels();
       soundButton.addEventListener("click", () => {
         muted = !muted;
-        soundButton.textContent = muted ? "♫" : "♪";
-        soundButton.setAttribute("aria-label", muted ? "Turn sound on" : "Turn sound off");
-        if (!muted) beep(580, .08, "sine", .035);
+        updateSoundButton();
+        try {
+          if (!muted && !audioContext) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) throw new Error("Web Audio is not supported");
+            const context = new AudioContextClass();
+            const master = context.createGain();
+            master.connect(context.destination);
+            audioContext = context;
+            audioMaster = master;
+          }
+          if (audioMaster) audioMaster.gain.setValueAtTime(muted ? 0 : 1, audioContext.currentTime);
+          if (!muted) {
+            if (audioContext.state === "running") playSound("enabled");
+            else resumeSound();
+          }
+        } catch (error) {
+          soundError(error);
+        }
       });
 
       function frame(now) {
