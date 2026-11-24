@@ -795,7 +795,7 @@
       const npcAssets = [];
       let fearIndicatorMaterial;
       let cityReady = false;
-      const player = { x: START_X, y: START_Y, vx: 0, vy: 0, angle: -Math.PI / 2, size: 1, level: 1, eaten: 0, growth: 0, coins: 0, peopleCollected: 0, combo: 0, comboTimer: 0, transformTimer: 0, dustTimer: 0, reach: 0 };
+      const player = { x: START_X, y: START_Y, vx: 0, vy: 0, driveSpeed: 0, angle: -Math.PI / 2, size: 1, level: 1, eaten: 0, growth: 0, coins: 0, peopleCollected: 0, combo: 0, comboTimer: 0, transformTimer: 0, dustTimer: 0, reach: 0 };
 
       const WORLD_SCALE = .01;
       // The selected GLBs share one scale; gameplay coordinates use 100 units per scene unit.
@@ -2208,15 +2208,31 @@
         });
       }
 
-      function nearestBuildingDistance(x, y) {
-        let nearest = Infinity;
+      function moveAlongBuildingAxis(position, crossPosition, delta, radius, horizontal) {
+        let target = position + delta;
         for (const building of buildings) {
           if (building.destroyed) continue;
-          const nearestX = clamp(x, building.x, building.x + building.w);
-          const nearestY = clamp(y, building.y, building.y + building.h);
-          nearest = Math.min(nearest, Math.hypot(x - nearestX, y - nearestY));
+          const crossMin = horizontal ? building.y : building.x;
+          const crossMax = crossMin + (horizontal ? building.h : building.w);
+          const crossDistance = Math.abs(crossPosition - clamp(crossPosition, crossMin, crossMax));
+          if (crossDistance >= radius) continue;
+          const extent = Math.sqrt(radius * radius - crossDistance * crossDistance);
+          const wallMin = horizontal ? building.x : building.y;
+          const wallMax = wallMin + (horizontal ? building.w : building.h);
+          const min = wallMin - extent;
+          const max = wallMax + extent;
+          if (position <= min && target > min) target = min;
+          else if (position >= max && target < max) target = max;
+          else if (position > min && position < max) {
+            // Growth can expand the dozer into a wall; permit sliding or moving out.
+            if (position < wallMin && target > position ||
+                position > wallMax && target < position ||
+                crossDistance === 0 && position >= wallMin && position <= wallMax &&
+                ((target > position && max - position > position - min) ||
+                 (target < position && position - min > max - position))) target = position;
+          }
         }
-        return nearest;
+        return target;
       }
 
       function canShatterBuilding(building) {
@@ -2410,6 +2426,7 @@
         if (timeLeft <= 0) {
           player.vx = 0;
           player.vy = 0;
+          player.driveSpeed = 0;
           updateCrushJobs(dt);
           updateIntakeJobs(dt);
           updateEffects(dt);
@@ -2421,10 +2438,11 @@
         const input = inputVector();
         const maxSpeed = (player.size > 1.35 ? 165 : 185) * Math.min(1.05, 1 + player.size * .015);
         const inputMagnitude = Math.hypot(input.x, input.y);
-        const currentSpeed = Math.hypot(player.vx, player.vy);
+        const currentSpeed = player.driveSpeed;
         const targetSpeed = maxSpeed * inputMagnitude;
         const acceleration = inputMagnitude > 0 ? 12 : 15;
         const speed = currentSpeed + (targetSpeed - currentSpeed) * (1 - Math.exp(-acceleration * dt));
+        player.driveSpeed = speed;
         if (inputMagnitude > 0) {
           player.vx = input.x / inputMagnitude * speed;
           player.vy = input.y / inputMagnitude * speed;
@@ -2447,14 +2465,12 @@
             }
           }
         }
-        let nextX = clamp(player.x + player.vx * dt, collisionRadius, WORLD.width - collisionRadius);
-        const currentClearance = nearestBuildingDistance(player.x, player.y);
-        if (!isInsideBuilding(nextX, player.y, collisionRadius) || nearestBuildingDistance(nextX, player.y) > currentClearance + .01) player.x = nextX;
-        else player.vx *= -.12;
-        let nextY = clamp(player.y + player.vy * dt, collisionRadius, WORLD.height - collisionRadius);
-        const verticalClearance = nearestBuildingDistance(player.x, player.y);
-        if (!isInsideBuilding(player.x, nextY, collisionRadius) || nearestBuildingDistance(player.x, nextY) > verticalClearance + .01) player.y = nextY;
-        else player.vy *= -.12;
+        const nextX = clamp(moveAlongBuildingAxis(player.x, player.y, player.vx * dt, collisionRadius, true), collisionRadius, WORLD.width - collisionRadius);
+        const nextY = clamp(moveAlongBuildingAxis(player.y, nextX, player.vy * dt, collisionRadius, false), collisionRadius, WORLD.height - collisionRadius);
+        player.vx = (nextX - player.x) / dt;
+        player.vy = (nextY - player.y) / dt;
+        player.x = nextX;
+        player.y = nextY;
 
         cameraX += (player.x - cameraX) * (1 - Math.exp(-8 * dt));
         cameraY += (player.y - cameraY) * (1 - Math.exp(-8 * dt));
@@ -2621,7 +2637,7 @@
       }
 
       function resetGame() {
-        player.x = START_X; player.y = START_Y; player.vx = 0; player.vy = 0;
+        player.x = START_X; player.y = START_Y; player.vx = 0; player.vy = 0; player.driveSpeed = 0;
         player.angle = -Math.PI / 2; player.size = 1; player.level = 1;
         player.eaten = 0; player.growth = 0; player.coins = 0; player.peopleCollected = 0;
         player.combo = 0; player.comboTimer = 0; player.transformTimer = 0; player.dustTimer = 0; player.reach = 0;
